@@ -1,5 +1,6 @@
 {:deps {io.github.nextjournal/clerk {:mvn/version "0.7.418"}
         clj-kondo/clj-kondo {:mvn/version "2022.04.24-SNAPSHOT"}
         org.clojure/clojure {:mvn/version "1.11.1"}
-        aero/aero {:mvn/version "1.1.6"}}
+        aero/aero {:mvn/version "1.1.6"}
+        arrowic/arrowic {:mvn/version "0.1.1"}}
  :paths ["src" "resources"]}

@@ -1,9 +1,11 @@
 ;; # Project explorer
 ^{:nextjournal.clerk/visibility #{:hide-ns}}
 (ns project-facts.core
-  (:require [clj-kondo.core :as clj-kondo]
-            [nextjournal.clerk :as clerk]
-            [aero.core :as config]))
+  (:require
+   [aero.core :as config]
+   [arrowic.core :as graph]
+   [clj-kondo.core :as clj-kondo]
+   [nextjournal.clerk :as clerk]))
 
 ; Projects are statically analyzed with `clj-kondo`
 ^{:nextjournal.clerk/visibility #{:hide}}
@@ -30,6 +32,19 @@
                      (mapv (fn [{:keys [from to]}]
                              {:parent from
                               :node to}))))
+(def ns-graph
+  (graph/with-graph (graph/create-graph)
+    (let [vertices (->> namespaces
+                        (reduce
+                         (fn [vs {:keys [node]}]
+                           (assoc vs (str node) (graph/insert-vertex! (str node))))
+                         {}))]
+      (doseq [{:keys [node parent]} namespaces]
+        (graph/insert-edge! (get vertices (str parent))
+                            (get vertices (str node)))))))
+;; ## Namespace viz
+(clerk/html
+ (graph/as-svg ns-graph))
 
 ;; ## Namespaces
 ^{:nextjournal.clerk/visibility #{:hide}}
@@ -43,12 +58,3 @@
                                   {:parent from
                                    :node to})))
                      (symbol (:root-ns (config/read-config "config.edn")))))
-
-;; ## Namespace viz
-^{:nextjournal.clerk/visibility #{:hide}}
-(clerk/html
- [:svg {:width "100%" :height 550}
-  (map-indexed
-   (fn [idx {:keys [node]}]
-     [:text {:x 10 :y (+ 20 (* idx 20))} node])
-   namespaces)])
