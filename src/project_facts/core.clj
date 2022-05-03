@@ -5,7 +5,17 @@
    [aero.core :as config]
    [arrowic.core :as graph]
    [clj-kondo.core :as clj-kondo]
-   [nextjournal.clerk :as clerk]))
+   [nextjournal.clerk :as clerk]
+   [project-facts.loc :as loc]))
+
+^{:nextjournal.clerk/visibility #{:hide}}
+(str (:project-path (config/read-config "config.edn")))
+
+;; ## Lines of Code per language
+
+^{:nextjournal.clerk/visibility #{:hide}}
+(clerk/table
+ (loc/per-language (:project-path (config/read-config "config.edn"))))
 
 ; Projects are statically analyzed with `clj-kondo`
 ^{:nextjournal.clerk/visibility #{:hide}}
